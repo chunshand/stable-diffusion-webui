@@ -327,6 +327,13 @@ class Api:
         send_images = args.pop('send_images', True)
         args.pop('save_images', None)
 
+        task_id=txt2imgreq.task_id
+        # 任务id
+        print("任务编号为："+str(task_id))
+        if task_id is None:
+            raise HTTPException(status_code=404, detail="task_id not found")
+
+
         with self.queue_lock:
             with closing(StableDiffusionProcessingTxt2Img(sd_model=shared.sd_model, **args)) as p:
                 p.scripts = script_runner
@@ -450,10 +457,14 @@ class Api:
 
     def progressapi(self, req: models.ProgressRequest = Depends()):
         # copy from check_progress_call of ui.py
-
+        task_id = req.task_id
+        if len(task_id) <= 0:
+            raise HTTPException(status_code=404, detail="task_id not found")
         if shared.state.job_count == 0:
             return models.ProgressResponse(progress=0, eta_relative=0, state=shared.state.dict(), textinfo=shared.state.textinfo)
-
+        if shared.state.task_id != task_id:
+            return models.ProgressResponse(progress=0, eta_relative=0, state=shared.state.dict(), textinfo=shared.state.textinfo)
+        
         # avoid dividing zero
         progress = 0.01
 

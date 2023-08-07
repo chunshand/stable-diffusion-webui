@@ -112,6 +112,8 @@ class State:
     _server_command_signal = threading.Event()
     _server_command: Optional[str] = None
 
+    task_id = ""
+
     @property
     def need_restart(self) -> bool:
         # Compatibility getter for need_restart.
@@ -177,6 +179,7 @@ class State:
             "job_no": self.job_no,
             "sampling_step": self.sampling_step,
             "sampling_steps": self.sampling_steps,
+            "task_id": self.task_id,
         }
 
         return obj
@@ -234,6 +237,7 @@ class State:
 
 state = State()
 state.server_start = time.time()
+task_id = ""
 
 styles_filename = cmd_opts.styles_file
 prompt_styles = modules.styles.StyleDatabase(styles_filename)
