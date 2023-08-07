@@ -342,6 +342,7 @@ class Api:
 
                 try:
                     shared.state.begin(job="scripts_txt2img")
+                    shared.state.task_id = task_id
                     if selectable_scripts is not None:
                         p.script_args = script_args
                         processed = scripts.scripts_txt2img.run(p, *p.script_args) # Need to pass args as list here
